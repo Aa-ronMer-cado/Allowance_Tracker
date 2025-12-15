@@ -17,7 +17,7 @@ public class Category {
     public String getName() { return name; }
     public String getType() { return type; }
     public String getIcon() { return icon; }
-
+    
     @Override
     public String toString() {
         return icon + " " + name;

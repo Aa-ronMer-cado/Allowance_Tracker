@@ -8,7 +8,7 @@ public class BudgetStatus {
     private double alertThreshold;
 
     public BudgetStatus(String categoryName, double monthlyLimit, double currentSpending,
-                    double utilizationPercent, double alertThreshold) {
+                       double utilizationPercent, double alertThreshold) {
         this.categoryName = categoryName;
         this.monthlyLimit = monthlyLimit;
         this.currentSpending = currentSpending;

@@ -14,8 +14,8 @@ public class Transaction {
     private String paymentMethod;
 
     public Transaction(int id, int categoryId, String categoryName, LocalDate date, 
-                    String description, double amount, String type, 
-                    boolean isExpected, String paymentMethod) {
+                      String description, double amount, String type, 
+                      boolean isExpected, String paymentMethod) {
         this.id = id;
         this.categoryId = categoryId;
         this.categoryName = categoryName;
@@ -27,6 +27,7 @@ public class Transaction {
         this.paymentMethod = paymentMethod;
     }
 
+    // Getters
     public int getId() { return id; }
     public int getCategoryId() { return categoryId; }
     public String getCategoryName() { return categoryName; }
@@ -36,4 +37,15 @@ public class Transaction {
     public String getType() { return type; }
     public boolean isExpected() { return isExpected; }
     public String getPaymentMethod() { return paymentMethod; }
+    
+    // Setters
+    public void setId(int id) { this.id = id; }
+    public void setCategoryId(int categoryId) { this.categoryId = categoryId; }
+    public void setCategoryName(String categoryName) { this.categoryName = categoryName; }
+    public void setDate(LocalDate date) { this.date = date; }
+    public void setDescription(String description) { this.description = description; }
+    public void setAmount(double amount) { this.amount = amount; }
+    public void setType(String type) { this.type = type; }
+    public void setExpected(boolean expected) { isExpected = expected; }
+    public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
 }

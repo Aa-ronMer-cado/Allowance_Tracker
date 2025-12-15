@@ -7,7 +7,7 @@ public class Summary {
     private double expectedExpenses;
 
     public Summary(double actualAllowance, double expectedAllowance,
-                double actualExpenses, double expectedExpenses) {
+                  double actualExpenses, double expectedExpenses) {
         this.actualAllowance = actualAllowance;
         this.expectedAllowance = expectedAllowance;
         this.actualExpenses = actualExpenses;

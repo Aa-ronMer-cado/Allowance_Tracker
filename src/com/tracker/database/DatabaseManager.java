@@ -4,8 +4,9 @@ import com.tracker.model.*;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 
 public class DatabaseManager {
     // XAMPP MySQL Connection Settings
@@ -23,18 +24,18 @@ public class DatabaseManager {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-            System.out.println("Connected to MySQL (XAMPP) successfully!");
+            System.out.println("✓ Connected to MySQL (XAMPP) successfully!");
             
             // Auto-create default user if missing
             ensureDefaultUserExists();
             
             printDatabaseStats();
         } catch (ClassNotFoundException e) {
-            System.err.println("MySQL JDBC Driver not found!");
-            System.err.println("Add mysql-connector-java-8.0.33.jar to lib/ folder");
+            System.err.println("✗ MySQL JDBC Driver not found!");
+            System.err.println("  Add mysql-connector-java-8.0.33.jar to lib/ folder");
             e.printStackTrace();
         } catch (SQLException e) {
-            System.err.println("Database connection failed!");
+            System.err.println("✗ Database connection failed!");
             System.err.println("  1. Check if XAMPP MySQL is running");
             System.err.println("  2. Verify database 'allowance_tracker' exists");
             System.err.println("  3. Check port 3306 is not blocked");
@@ -49,16 +50,22 @@ public class DatabaseManager {
             ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM users WHERE user_id = 1");
             
             if (rs.next() && rs.getInt(1) == 0) {
-                // No user with ID 1, create it
-                String insertUser = "INSERT INTO users (user_id, name, email) VALUES (1, 'Demo User', 'demo@allowancetracker.com')";
+                // TODO: Change these to your personal details!
+                String userName = "Your Name";  // ← CHANGE THIS
+                String userEmail = "your.email@gmail.com";  // ← CHANGE THIS
+                
+                String insertUser = String.format(
+                    "INSERT INTO users (user_id, name, email) VALUES (1, '%s', '%s')",
+                    userName, userEmail
+                );
                 stmt.executeUpdate(insertUser);
-                System.out.println("Default user created (ID: 1)");
+                System.out.println("✓ Personal account created: " + userName);
             } else {
-                System.out.println("Default user exists (ID: 1)");
+                System.out.println("✓ Personal account ready");
             }
             stmt.close();
         } catch (SQLException e) {
-            System.err.println("Warning: Could not verify default user");
+            System.err.println("⚠ Warning: Could not verify user account");
             e.printStackTrace();
         }
     }
@@ -82,11 +89,11 @@ public class DatabaseManager {
             pstmt.executeUpdate();
             ResultSet keys = pstmt.getGeneratedKeys();
             if (keys.next()) {
-                System.out.println("Transaction added: ID " + keys.getInt(1));
+                System.out.println("✓ Transaction added: ID " + keys.getInt(1));
                 return keys.getInt(1);
             }
         } catch (SQLException e) {
-            System.err.println("Error adding transaction: " + e.getMessage());
+            System.err.println("✗ Error adding transaction: " + e.getMessage());
         }
         return -1;
     }
@@ -102,9 +109,9 @@ public class DatabaseManager {
             pstmt.setDouble(3, alertThreshold);
             pstmt.setString(4, monthYear);
             pstmt.executeUpdate();
-            System.out.println("Budget set for category " + categoryId);
+            System.out.println("✓ Budget set for category " + categoryId);
         } catch (SQLException e) {
-            System.err.println("Error setting budget: " + e.getMessage());
+            System.err.println("✗ Error setting budget: " + e.getMessage());
         }
     }
 
@@ -132,7 +139,7 @@ public class DatabaseManager {
                 ));
             }
         } catch (SQLException e) {
-            System.err.println("Error fetching transactions: " + e.getMessage());
+            System.err.println("✗ Error fetching transactions: " + e.getMessage());
         }
         return transactions;
     }
@@ -153,7 +160,7 @@ public class DatabaseManager {
                 ));
             }
         } catch (SQLException e) {
-            System.err.println(" Error fetching categories: " + e.getMessage());
+            System.err.println("✗ Error fetching categories: " + e.getMessage());
         }
         return categories;
     }
@@ -172,9 +179,9 @@ public class DatabaseManager {
             pstmt.setDate(5, Date.valueOf(date));
             pstmt.setInt(6, id);
             pstmt.executeUpdate();
-            System.out.println("Transaction " + id + " updated");
+            System.out.println("✓ Transaction " + id + " updated");
         } catch (SQLException e) {
-            System.err.println("Error updating transaction: " + e.getMessage());
+            System.err.println("✗ Error updating transaction: " + e.getMessage());
         }
     }
 
@@ -184,9 +191,9 @@ public class DatabaseManager {
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, transactionId);
             pstmt.executeUpdate();
-            System.out.println("Transaction " + transactionId + " deleted");
+            System.out.println("✓ Transaction " + transactionId + " deleted");
         } catch (SQLException e) {
-            System.err.println("Error deleting transaction: " + e.getMessage());
+            System.err.println("✗ Error deleting transaction: " + e.getMessage());
         }
     }
 
@@ -211,7 +218,7 @@ public class DatabaseManager {
                 );
             }
         } catch (SQLException e) {
-            System.err.println("Error calculating summary: " + e.getMessage());
+            System.err.println("✗ Error calculating summary: " + e.getMessage());
         }
         return new Summary(0, 0, 0, 0);
     }
@@ -233,10 +240,10 @@ public class DatabaseManager {
         try {
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM categories");
-            if (rs.next()) System.out.println("Categories: " + rs.getInt(1));
+            if (rs.next()) System.out.println("  → Categories: " + rs.getInt(1));
             
             rs = stmt.executeQuery("SELECT COUNT(*) FROM transactions");
-            if (rs.next()) System.out.println("Transactions: " + rs.getInt(1));
+            if (rs.next()) System.out.println("  → Transactions: " + rs.getInt(1));
         } catch (SQLException e) {
             System.err.println("Error fetching stats: " + e.getMessage());
         }
@@ -246,7 +253,7 @@ public class DatabaseManager {
         try {
             if (connection != null) {
                 connection.close();
-                System.out.println("Database connection closed");
+                System.out.println("✓ Database connection closed");
             }
         } catch (SQLException e) {
             System.err.println("Error closing connection: " + e.getMessage());
